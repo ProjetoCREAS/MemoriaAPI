@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 app = FastAPI()
 
 # Altere aqui para o SEU repositório real
-BASE_REPO_RAW = "https://raw.githubusercontent.com/seu-usuario/seu-repo/main/"
+BASE_REPO_RAW = "https://github.com/ProjetoCREAS/BobComparerV2.git/"
 
 # Lista de arquivos que a API pode buscar
 ARQUIVOS = [
