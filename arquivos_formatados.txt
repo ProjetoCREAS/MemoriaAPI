@@ -1,4 +1,3 @@
-ARQUIVOS = [
     ".gitattributes",
     ".gitignore",
     ".gitmodules",
@@ -555,4 +554,3 @@ ARQUIVOS = [
     "WzComparerR2.WzLib/Utilities/StreamExtension.cs",
     "WzComparerR2.WzLib/Utilities/WzBinaryReader.cs",
     "WzComparerR2.WzLib/Utilities/WzStreamReader.cs",
-]
