@@ -17,7 +17,6 @@ app.add_middleware(
 
 # 📂 Servindo arquivos estáticos (plugin + openapi + ícone)
 app.mount("/.well-known", StaticFiles(directory=".well-known"), name="well-known")
-app.mount("/static", StaticFiles(directory=".", html=True), name="static-root")  # opcional
 
 # 🌐 Forks públicos a consultar
 REPOSITORIOS = [
