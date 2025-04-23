@@ -2,7 +2,6 @@ import requests
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-<<<<<<< HEAD
 
 app = FastAPI()
 
@@ -10,7 +9,6 @@ app = FastAPI()
 app.mount("/.well-known", StaticFiles(directory=".well-known"), name="well-known")
 app.mount("/", StaticFiles(directory=".", html=True), name="static-root")
 
-=======
 from fastapi.middleware.cors import CORSMiddleware
 import os
 
@@ -29,7 +27,6 @@ app.mount("/.well-known", StaticFiles(directory=".well-known"), name="well-known
 app.mount("/", StaticFiles(directory=".", html=True), name="static-root")
 
 # 🌐 Repositórios públicos a serem consultados
->>>>>>> 0e1deec1beb95025b37fccc3b6b477756f5b3972
 REPOSITORIOS = [
     {"nome": "HikariCalyx", "raw_base": "https://raw.githubusercontent.com/HikariCalyx/WzComparerR2-JMS/main/"},
     {"nome": "PirateIzzy", "raw_base": "https://raw.githubusercontent.com/PirateIzzy/WzComparerR2/main/"},
@@ -37,11 +34,9 @@ REPOSITORIOS = [
     {"nome": "KENNYSOFT", "raw_base": "https://raw.githubusercontent.com/KENNYSOFT/WzComparerR2/main/"}
 ]
 
-<<<<<<< HEAD
 with open("arquivos_formatados.txt", encoding="utf-8") as f:
     ARQUIVOS = [linha.strip().strip(',').strip('"') for linha in f if linha.strip().startswith('"')]
 
-=======
 # 📄 Carrega a lista de arquivos formatados, se existir
 ARQUIVOS = []
 if os.path.exists("arquivos_formatados.txt"):
@@ -54,7 +49,6 @@ async def root():
     return {"status": "🧠 MemoriaAPI está online!"}
 
 # 🔎 Endpoint de busca por código
->>>>>>> 0e1deec1beb95025b37fccc3b6b477756f5b3972
 @app.get("/buscarNaMemoria")
 async def buscar_na_memoria(termo: str):
     for repo in REPOSITORIOS:
