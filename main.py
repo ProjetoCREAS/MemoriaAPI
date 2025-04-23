@@ -15,9 +15,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 📂 Servindo arquivos estáticos (plugin + openapi + ícone)
-app.mount("/.well-known", StaticFiles(directory=".well-known"), name="well-known")
-
 # 🌐 Forks públicos a consultar
 REPOSITORIOS = [
     {"nome": "HikariCalyx", "raw_base": "https://raw.githubusercontent.com/HikariCalyx/WzComparerR2-JMS/main/"},
