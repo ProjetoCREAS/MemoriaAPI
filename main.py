@@ -44,8 +44,8 @@ if os.path.exists("arquivos_formatados.txt"):
         ARQUIVOS = [linha.strip().strip(',').strip('"') for linha in f if linha.strip().startswith('"')]
 
 # 🔍 Endpoint de status
-@app.get("/")
-async def root():
+@app.get("/status")
+async def status():
     return {"status": "🧠 MemoriaAPI está online!"}
 
 # 🔎 Endpoint de busca por código
