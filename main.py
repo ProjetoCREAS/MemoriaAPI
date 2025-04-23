@@ -54,5 +54,10 @@ async def buscar_na_memoria(termo: str):
         if index != -1:
             snippet_lines = content[index:].splitlines()[:40]
             trecho = "\n".join(snippet_lines)
-            return {"arquivo": arq, "url": url, "trecho": trecho}
+            return {
+    "repositorio": "PirateIzzy",   # <-- Adicione este campo
+    "arquivo": arq,
+    "url": url,
+    "trecho": trecho
+}
     return JSONResponse(status_code=404, content={"erro": "Não encontrado"})
