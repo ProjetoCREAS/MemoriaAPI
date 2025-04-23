@@ -7,6 +7,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+from fastapi.staticfiles import StaticFiles
+
+# Serve arquivos do plugin e da spec
+app.mount("/.well-known", StaticFiles(directory=".well-known"), name="plugin-manifest")
+app.mount("/", StaticFiles(directory=".", html=True), name="root-files")
+
+
 # 🔓 CORS para ChatGPT Plugin
 app.add_middleware(
     CORSMiddleware,
@@ -41,6 +48,7 @@ async def buscar_na_memoria(termo: str):
         for arq in ARQUIVOS:
             url = repo["raw_base"] + arq.replace(" ", "%20")
             try:
+                print(f"🔍 Buscando em: {url}")
                 r = requests.get(url, timeout=5)
                 if r.status_code == 200 and termo in r.text:
                     i = r.text.find(termo)
