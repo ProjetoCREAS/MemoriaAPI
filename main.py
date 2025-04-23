@@ -1,65 +1,74 @@
-import os
 import requests
-from fastapi import FastAPI
-from fastapi.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
-from fastapi.staticfiles import StaticFiles
-
-# Serve arquivos do plugin e da spec
-app.mount("/.well-known", StaticFiles(directory=".well-known"), name="plugin-manifest")
-app.mount("/", StaticFiles(directory=".", html=True), name="root-files")
-
-# 🧩 CORS para acesso via ChatGPT Plugin
+# Allow CORS for any origin
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# 🔧 Montagem de arquivos estáticos
-app.mount("/.well-known", StaticFiles(directory=".well-known"), name="plugin-manifest")
-app.mount("/", StaticFiles(directory=".", html=True), name="static-root")
+# Mount static files for the ChatGPT plugin (ai-plugin.json in .well-known, openapi.yaml and icon.png in root)
+app.mount("/.well-known", StaticFiles(directory=".well-known"), name="well-known")
 
-# 🌐 Repositórios públicos
-REPOSITORIOS = [
-    {"nome": "HikariCalyx", "raw_base": "https://raw.githubusercontent.com/HikariCalyx/WzComparerR2-JMS/main/"},
-    {"nome": "PirateIzzy", "raw_base": "https://raw.githubusercontent.com/PirateIzzy/WzComparerR2/main/"},
-    {"nome": "Kagamia", "raw_base": "https://raw.githubusercontent.com/Kagamia/WzComparerR2/main/"},
-    {"nome": "KENNYSOFT", "raw_base": "https://raw.githubusercontent.com/KENNYSOFT/WzComparerR2/main/"}
-]
+@app.get("/openapi.yaml", include_in_schema=False)
+async def get_openapi_yaml():
+    return FileResponse("openapi.yaml", media_type="text/yaml")
 
-ARQUIVOS = []
-if os.path.exists("arquivos_formatados.txt"):
-    with open("arquivos_formatados.txt", encoding="utf-8") as f:
-        ARQUIVOS = [linha.strip().strip(',').strip('"') for linha in f if linha.strip().startswith('"')]
+@app.get("/icon.png", include_in_schema=False)
+async def get_icon_png():
+    return FileResponse("icon.png", media_type="image/png")
+
+# Load list of files from arquivos_formatados.txt
+try:
+    with open("arquivos_formatados.txt", "r", encoding="utf-8") as f:
+        ARQUIVOS = [line.strip() for line in f if line.strip()]
+except Exception as e:
+    ARQUIVOS = []
+    # Optionally log the error if needed
+    # print(f"Erro ao carregar arquivos_formatados.txt: {e}")
+
+# Base URL for raw files in the GitHub repository
+BASE_REPO_RAW = "https://raw.githubusercontent.com/PirateIzzy/WzComparerR2/main/"
 
 @app.get("/status")
 async def status():
     return {"status": "🧠 MemoriaAPI está online!"}
 
-# 🔍 Endpoint de busca principal
 @app.get("/buscarNaMemoria")
 async def buscar_na_memoria(termo: str):
-    for repo in REPOSITORIOS:
-        for arq in ARQUIVOS:
-            url = repo["raw_base"] + arq.replace(" ", "%20")
-            try:
-                print(f"🔍 Buscando em: {url}")
-                r = requests.get(url, timeout=5)
-                if r.status_code == 200 and termo in r.text:
-                    i = r.text.find(termo)
-                    trecho = "\n".join(r.text[i:].splitlines()[:40])
-                    return {
-                        "repositorio": repo["nome"],
-                        "arquivo": arq,
-                        "url": url,
-                        "trecho": trecho
-                    }
-            except requests.RequestException:
-                continue
-    return JSONResponse(status_code=404, content={"erro": "Nenhum código correspondente foi encontrado."})
+    # Validate query parameter
+    if not termo:
+        raise HTTPException(status_code=400, detail="Parâmetro 'termo' é obrigatório.")
+
+    termo_lower = termo.lower()
+    for arq in ARQUIVOS:
+        url = BASE_REPO_RAW + arq.replace(" ", "%20")
+        try:
+            response = requests.get(url)
+        except Exception as e:
+            # If a request fails, skip to the next file
+            continue
+
+        if response.status_code != 200:
+            # Skip files that cannot be retrieved
+            continue
+
+        content = response.text
+        index = content.lower().find(termo_lower)
+        if index != -1:
+            # Term found in this file
+            # Capture a snippet of up to 40 lines starting from the occurrence
+            snippet_lines = content[index:].splitlines()[:40]
+            trecho = "\n".join(snippet_lines)
+            return {"arquivo": arq, "trecho": trecho}
+
+    # If the term was not found in any file, return 404
+    return JSONResponse(status_code=404, content={"erro": "Não encontrado"})
