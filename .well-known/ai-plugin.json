@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_model": "memoria_codigo",
+  "name_for_human": "Memória de Código BobComparer",
+  "description_for_model": "Busca exemplos de código reais nos repositórios públicos do WzComparerR2 (HikariCalyx, PirateIzzy, Kagamia, KENNYSOFT).",
+  "description_for_human": "Procure funções, métodos ou trechos de código em múltiplos forks públicos do projeto WzComparerR2 no GitHub.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://memoria-api.onrender.com/openapi.yaml"
+  },
+  "logo_url": "https://memoria-api.onrender.com/icon.png",
+  "contact_email": "suporte@projetocreas.org",
+  "legal_info_url": "https://github.com/ProjetoCREAS/MemoriaAPI/blob/main/LICENSE"
+}

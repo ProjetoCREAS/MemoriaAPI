@@ -1,0 +1,37 @@
+openapi: "3.1.0"
+info:
+  title: "Memória de Código BobComparer"
+  version: "1.0.0"
+  description: "Consulta múltiplos forks públicos do WzComparerR2 no GitHub para encontrar código real existente e evitar reimplementações desnecessárias."
+servers:
+  - url: "https://memoria-api.onrender.com"
+paths:
+  /buscarNaMemoria:
+    get:
+      summary: "Procura por código real em múltiplos repositórios públicos"
+      operationId: buscarNaMemoria
+      parameters:
+        - name: termo
+          in: query
+          required: true
+          description: "Nome da função, classe ou lógica que deseja encontrar (ex: FindNodeByPath, ExportAnimations, IconExtractor)"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Código encontrado com sucesso."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  repositorio:
+                    type: string
+                  arquivo:
+                    type: string
+                  url:
+                    type: string
+                  trecho:
+                    type: string
+        '404':
+          description: "Nenhum código correspondente foi encontrado."
